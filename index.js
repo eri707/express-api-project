@@ -1,40 +1,93 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const fs = require('fs');
 const { uuid } = require('uuidv4');
 app.use(express.json());
 
-let fruitsArray = ['apple', 'orange', 'grapefruit', 'watermelon'];
-let fruitsObject = fruitsArray.map((ele) => {
-    return {
+let fruitsArray = [
+    {
         id: uuid(),
-        name: ele,
+        name: 'apple',
+        expired: true,
+        origin: 'Japan'
+    },
+    {
+        id: uuid(),
+        name: 'orange',
         expired: false,
-        origin: null
+        origin: 'US'
+    },
+    {
+        id: uuid(),
+        name: 'grapefruit',
+        expired: true,
+        origin: 'Tailand'
+    },
+    {
+        id: uuid(),
+        name: 'watermelon',
+        expired: false,
+        origin: 'Brazil'
+    },
+    {
+        id: uuid(),
+        name: 'watermelon',
+        expired: false,
+        origin: 'Brazil'
+    },
+    {
+        id: uuid(),
+        name: 'pineapple',
+        expired: false,
+        origin: 'Brazil'
+    },
+    {
+        id: uuid(),
+        name: 'pineapple',
+        expired: true,
+        origin: 'Japan'
+    },
+    {
+        id: uuid(),
+        name: 'pineapple',
+        expired: false,
+        origin: 'Japan'
     }
-})
-// get fruitsArray
+]
+
+//get fruits using query parameters
 app.get('/', (req, res) => {
-    res.json(fruitsObject);
+    let fruits = [...fruitsArray];
+    if (req.query.fruit) {
+        fruits = fruits.filter(ele => ele.name == req.query.fruit);
+    }
+    console.log(fruits)
+    if (req.query.origin) {
+        fruits = fruits.filter(ele => ele.origin == req.query.origin);
+    }
+    if (req.query.expired) {
+        fruits = fruits.filter(ele => ele.expired == Boolean(req.query.expired));
+    }
+    res.send(fruits);
 });
-// add fruit into the fruitArray
+
+// add fruit into the fruitsArray
 app.post('/', (req, res) => {
     req.body.id = uuid();
-    fruitsObject.push(req.body);
-    res.json(fruitsObject);
+    fruitsArray.push(req.body);
+    res.json(fruitsArray);
 });
-// delete fruit from the fruitArray
+// delete fruit from the fruitsArray
 app.delete('/', function (req, res) {
     //console.log(req.query.fruit);
-    if (req.query.fruit && !req.query.id){
-        const idx = fruitsObject.findIndex(ele => ele.name == req.query.fruit);
-        fruitsObject.splice(idx, 1);
-        res.send(fruitsObject);
-    }else if (req.query.id || (req.query.fruit && req.query.id)){
-        const idx = fruitsObject.findIndex(ele => ele.id == req.query.id);
-        fruitsObject.splice(idx, 1);
-        res.send(fruitsObject);
+    if (req.query.fruit && !req.query.id) {
+        const idx = fruitsArray.findIndex(ele => ele.name == req.query.fruit);
+        fruitsArray.splice(idx, 1);
+        res.send(fruitsArray);
+    } else if (req.query.id || (req.query.fruit && req.query.id)) {
+        const idx = fruitsArray.findIndex(ele => ele.id == req.query.id);
+        fruitsArray.splice(idx, 1);
+        res.send(fruitsArray);
     }
 });
 
